@@ -4,3 +4,4 @@ SQLAlchemy==2.0.45
 aiomysql==0.3.2
 APScheduler==3.11.2
 python-dotenv==1.0.0
+cryptography==46.0.6
