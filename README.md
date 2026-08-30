@@ -60,6 +60,31 @@ python main.py
 首次运行会交互式要求输入手机号与验证码，登录成功后生成 `session` 文件（已加入
 `.gitignore`，不会提交）。
 
+## 部署为 systemd 服务（Linux）
+
+仓库提供 `telegram-channel-manager.service`，用于在 Linux 服务器上常驻运行。
+
+```bash
+# 1. 拉取代码并安装依赖（建议使用 venv）
+cd /opt/telegram-channel-manager
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+mysql -u root -p < schema.sql
+cp .env.example .env   # 填好配置
+
+# 2. 先在终端手动登录一次，生成 session 文件（systemd 无法交互输入验证码）
+.venv/bin/python main.py     # 登录成功后 Ctrl+C 退出
+
+# 3. 修改 service 文件中的 WorkingDirectory / ExecStart 路径
+#    然后安装并启动
+sudo cp telegram-channel-manager.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now telegram-channel-manager
+
+# 查看日志
+journalctl -u telegram-channel-manager -f
+```
+
 ## 配置说明（.env）
 
 | 变量 | 说明 |

@@ -1,0 +1,18 @@
+[Unit]
+Description=Telegram Channel Manager (频道数据统计与人员管理机器人)
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+# 部署目录，按需修改
+WorkingDirectory=/opt/telegram-channel-manager
+# 使用虚拟环境；如无 venv 可改为 /usr/bin/python3
+ExecStart=/opt/telegram-channel-manager/.venv/bin/python main.py
+Restart=always
+RestartSec=5
+# 建议用非 root 用户运行，需确保对目录与 session 文件有读写权限
+# User=www-data
+
+[Install]
+WantedBy=multi-user.target
