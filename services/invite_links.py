@@ -13,8 +13,7 @@ async def sync_invite_links(client, channel_id: int) -> int:
     result = await client(
         functions.messages.GetExportedChatInvitesRequest(
             peer=channel_id,
-            admin=me,
-            revoked=False,
+            admin_id=me,
             limit=100,
         )
     )

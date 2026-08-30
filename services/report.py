@@ -7,7 +7,7 @@ from database import DailyStat, MemberEvent, Message, session_scope
 from repo import daily as daily_repo
 from repo import members as members_repo
 
-JOIN_TYPES = ("JOIN",)
+JOIN_TYPES = ("JOIN", "INVITE")
 LEAVE_TYPES = ("LEAVE", "KICK")
 
 

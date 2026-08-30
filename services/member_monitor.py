@@ -21,14 +21,6 @@ logger = get_logger("member_monitor")
 _last_event_id: dict[int, int] = {}
 
 
-def _peer_user_id(peer) -> int | None:
-    if peer is None:
-        return None
-    if isinstance(peer, int):
-        return peer
-    return getattr(peer, "user_id", None)
-
-
 def _parse_event(ev):
     """解析一条管理员日志事件，返回 (event_type, user_id, inviter_id, invite_link)。"""
     action = ev.action
@@ -40,18 +32,20 @@ def _parse_event(ev):
         return "LEAVE", ev.user_id, None, None
 
     if isinstance(action, ChannelAdminLogEventActionParticipantInvite):
-        user_id = _peer_user_id(getattr(action, "participant_id", None))
+        # 管理员直接添加成员：participant 为 ChannelParticipant
+        user_id = getattr(getattr(action, "participant", None), "user_id", None)
         return "INVITE", user_id, ev.user_id, None
 
     if isinstance(action, ChannelAdminLogEventActionParticipantJoinByInvite):
         invite = getattr(action, "invite", None)
-        link = getattr(invite, "link", None) or getattr(invite, "invite_link", None)
+        link = getattr(invite, "link", None)
         return "JOIN", ev.user_id, None, link
 
     if isinstance(action, ChannelAdminLogEventActionParticipantToggleBan):
         new_participant = getattr(action, "new_participant", None)
         if getattr(new_participant, "banned_rights", None):
-            return "KICK", _peer_user_id(getattr(new_participant, "peer", None)), ev.user_id, None
+            peer = getattr(new_participant, "peer", None)
+            return "KICK", getattr(peer, "user_id", None), ev.user_id, None
         return None, None, None, None
 
     return None, None, None, None
@@ -102,7 +96,7 @@ async def monitor_channel(client, channel_id: int, limit: int = 100) -> int:
         join=True,
         leave=True,
         invite=True,
-        kick=True,
+        ban=True,
         limit=limit,
         min_id=min_id,
     )
