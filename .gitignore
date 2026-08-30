@@ -1,0 +1,22 @@
+# 密钥与登录态（绝不上传）
+.env
+*.session
+*.session-journal
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# IDE / 系统
+.idea/
+.vscode/
+.claude/
+.DS_Store
+
+# 日志
+logs/
+*.log
